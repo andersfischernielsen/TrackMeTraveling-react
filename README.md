@@ -1,2 +1,2 @@
-# TrackMeTraveling-react
+# TrackMeTraveling-react 🌍 
 The react application for TrackMeTraveling.
