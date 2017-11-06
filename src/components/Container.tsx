@@ -2,6 +2,7 @@ import * as React from "react";
 import { UsernameHeading } from "./Hello"
 import { MapView } from "./MapView"
 import { NearbySights } from "./NearbySights";
+import { Login } from "./Login";
 
 export interface Data {
     username: string;
@@ -13,9 +14,12 @@ export class Container extends React.Component<ContainerProperties, {}> {
     render() {
         return (
             <div>
-                <UsernameHeading username={this.props.data.username} />
-                <MapView latitude={this.props.data.latitude} longitude={this.props.data.longitude} />
-                <NearbySights latitude={this.props.data.latitude} longitude={this.props.data.longitude} />
+                <Login />
+                {
+                    /* <UsernameHeading username={this.props.data.username} />
+                    <MapView latitude={this.props.data.latitude} longitude={this.props.data.longitude} />
+                    <NearbySights latitude={this.props.data.latitude} longitude={this.props.data.longitude} /> */
+                }
             </div>
         );
     }
