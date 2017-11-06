@@ -1,9 +1,11 @@
 import * as React from "react";
+import { Redirect } from "react-router";
 
 export interface ILoginState {
     username: string,
     password: string,
-    remember: boolean
+    remember: boolean,
+    shouldRedirect: boolean
 } 
 
 interface ITokens {
@@ -37,6 +39,7 @@ export class Login extends React.Component<{}, ILoginState> {
             if (response.status == 401) return;
             let json = await response.json() as ITokens;
             this.storeTokens(json);
+            return <Redirect to="/:" />
         } catch {
             //TODO: Do things when error occures.
         }
@@ -58,6 +61,8 @@ export class Login extends React.Component<{}, ILoginState> {
     }
     
     render() {
+        let shouldRedirect = this.state;
+
         return (
             <div>
                 <h1>Login</h1>
