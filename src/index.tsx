@@ -1,24 +1,25 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { Route } from "react-router";
+import * as DOM from "react-dom";
+import { Route, Switch } from "react-router";
 import { BrowserRouter, Link } from "react-router-dom";
-import { Container } from "./components/Container";
+import { Landing } from "./components/Landing";
 import { User, Data } from "./components/User";
 import { Login } from "./components/Login";
 
-let data : Data = {
-    username: "fischer",
-    latitude: 55.663685,
-    longitude: 12.598535
-}
-
-ReactDOM.render(
+DOM.render(
     <BrowserRouter> 
-        <div>
-            <Route path="/" component={Container} /> 
+        <Switch>
+            <Route path="/" component={Landing} /> 
             <Route path="/login" component={Login} />
-            {/* <Route path="/:username?" render={() => <User data={this.data} />}/> */}
-        </div>
+
+{
+            <Route path="/:username" component={User} /> 
+            //TODO: Implement header and top-level component with header + content.
+            //      Header should have check for tokens.
+            //TODO: Add onEnter action for checking whether user is restricted. 
+            //      If restricted, redirect to login, where token is stored.
+}
+        </Switch>
     </BrowserRouter>,
     document.getElementById("container")
 );
