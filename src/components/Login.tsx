@@ -1,11 +1,13 @@
 import * as React from "react";
 import { Redirect } from "react-router";
+import { fakeAuth,  } from "./Auth";
 
-export interface ILoginState {
+export interface ILoginInfoState {
     username: string,
     password: string,
     remember: boolean,
-    shouldRedirect: boolean
+    shouldRedirect: boolean, 
+    redirectToReferrer: boolean 
 } 
 
 interface ITokens {
@@ -13,12 +15,42 @@ interface ITokens {
     refresh_token: string
 }
 
-export class Login extends React.Component<{}, ILoginState> {
+export class Login extends React.Component<{}, ILoginInfoState> {
     constructor(props:any) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);        
         this.handleChange = this.handleChange.bind(this);     
+        this.setState({['redirectToReferrer']: false});
     }
+
+    render() {
+        const { from } = (this.props as any).location.state || { from: { pathname: '/' } }
+        const { redirectToReferrer } = this.state
+        
+        if (redirectToReferrer) {
+            return (
+                <Redirect to={from}/>
+            )
+        }
+        
+        return (
+            <div>
+                <h1>Login</h1>
+                <form onSubmit={this.handleSubmit}> 
+                    <input type="text" name="username" placeholder="Username" onChange={this.handleChange}></input>
+                    <input name="password" placeholder="Password" type="password" onChange={this.handleChange}></input>
+                    <label> Remember me
+                        <input name="remember" type="checkbox" onChange={this.handleChange}></input>
+                    </label>
+                    <input type="submit" value="Submit"></input>
+                </form>
+            </div>
+        );
+    }
+  
+    
+
+    login = () => fakeAuth.authenticate(() => this.setState({ redirectToReferrer: true }));    
 
     async handleSubmit(event:any) {
         event.preventDefault();
@@ -39,7 +71,7 @@ export class Login extends React.Component<{}, ILoginState> {
             if (response.status == 401) return;
             let json = await response.json() as ITokens;
             this.storeTokens(json);
-            return <Redirect to="/:" />
+            this.login();
         } catch {
             //TODO: Do things when error occures.
         }
@@ -58,23 +90,5 @@ export class Login extends React.Component<{}, ILoginState> {
         let target = event.target;
         let value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({[target.name]: value});
-    }
-    
-    render() {
-        let shouldRedirect = this.state;
-
-        return (
-            <div>
-                <h1>Login</h1>
-                <form onSubmit={this.handleSubmit}> 
-                <input type="text" name="username" placeholder="Username" onChange={this.handleChange}></input>
-                <input name="password" placeholder="Password" type="password" onChange={this.handleChange}></input>
-                <label> Remember me
-                    <input name="remember" type="checkbox" onChange={this.handleChange}></input>
-                </label>
-                <input type="submit" value="Submit"></input>
-                </form>
-            </div>
-        );
     }
 }

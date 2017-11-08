@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Route } from "react-router";
-import { BrowserRouter, Link } from "react-router-dom";
+import { PrivateRoute } from "./components/Auth";
+import { BrowserRouter as Router, Link } from "react-router-dom";
 import { Container } from "./components/Container";
 import { User, Data } from "./components/User";
 import { Login } from "./components/Login";
@@ -13,12 +14,12 @@ let data : Data = {
 }
 
 ReactDOM.render(
-    <BrowserRouter> 
+    <Router> 
         <div>
             <Route path="/" component={Container} /> 
             <Route path="/login" component={Login} />
-            {/* <Route path="/:username?" render={() => <User data={this.data} />}/> */}
+            <PrivateRoute path="/:username" component={User} render={() => <User data={this.data} />}/>
         </div>
-    </BrowserRouter>,
+    </Router>,
     document.getElementById("container")
 );
