@@ -2,9 +2,10 @@
   "name": "trackmetraveling-react",
   "version": "1.0.0",
   "description": "The React server of TrackMeTraveling.",
-  "main": "index.js",
+  "main": "index.tsx",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-dev": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js"
   },
   "author": "Anders Fischer-Nielsen",
   "license": "ISC",
@@ -23,6 +24,8 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "source-map-loader": "^0.2.3",
-    "typescript": "^2.5.3"
+    "typescript": "^2.5.3",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4"
   }
 }

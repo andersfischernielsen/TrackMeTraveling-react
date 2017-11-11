@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Redirect } from "react-router";
+import { BASEURL } from '../../config' 
 
 export interface ILoginState {
     username: string,
@@ -35,11 +36,11 @@ export class Login extends React.Component<{}, ILoginState> {
         };
 
         try {
-            let response = await fetch('http://localhost:5000/auth', options);
+            let response = await fetch(BASEURL + '/auth', options);
             if (response.status == 401) return;
             let json = await response.json() as ITokens;
             this.storeTokens(json);
-            return <Redirect to="/:" />
+            return <Redirect to={`/${this.state.username}`} />
         } catch {
             //TODO: Do things when error occures.
         }
@@ -48,8 +49,8 @@ export class Login extends React.Component<{}, ILoginState> {
     storeTokens(tokens:ITokens) {
         if (tokens === undefined) return;
         let storage = this.state.remember ? localStorage : sessionStorage;
-        let access_token_key = `TrackMeTraveling:${this.state.username}:access_token`;
-        let refresh_token_key = `TrackMeTraveling:${this.state.username}:refresh_token`;
+        let access_token_key = `${this.state.username}:access_token`;
+        let refresh_token_key = `${this.state.username}:refresh_token`;
         storage.setItem(access_token_key, tokens.access_token);
         storage.setItem(refresh_token_key, tokens.refresh_token);
     }
