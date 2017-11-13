@@ -6,46 +6,81 @@ import { MapView } from "./MapView"
 import { NearbySights } from "./NearbySights";
 import { BASEURL } from '../../config'
 
-export interface UserState {
-    loading: boolean,
-    authorized: boolean
-}
 
-export interface Data {
+export interface UserData {
     username: string;
     latitude: number;
     longitude: number;
 }
-export interface UserProperties extends RouteComponentProps<any> { data: Data }
 
-export class User extends React.Component<UserProperties, UserState> {
+export interface UserState {
+    loading: boolean,
+    authorized: boolean,
+    found: boolean,
+    data: UserData
+}
+
+export class User extends React.Component<RouteComponentProps<any>, UserState> {
+    constructor(props:any) {
+        super(props);
+        this.state = {
+            loading: true, 
+            authorized: false, 
+            found: false, 
+            data: {
+                username: undefined,
+                latitude: undefined, 
+                longitude: undefined 
+            }
+        };
+    }
+
     renderLoading = () => (<div>Loading...</div>);
+    renderNotFound = () => (<div>User not found.</div>);
     renderUnauthorized = () => (<div>This user is private.</div>);
     renderUserPage = () => (
         <div>
-            <UsernameHeading username={this.props.data.username} />
-            <MapView latitude={this.props.data.latitude} longitude={this.props.data.longitude} />
-            <NearbySights latitude={this.props.data.latitude} longitude={this.props.data.longitude} />
+            <UsernameHeading username={this.state.data.username} />
+            <MapView latitude={this.state.data.latitude} longitude={this.state.data.longitude} />
+            <NearbySights latitude={this.state.data.latitude} longitude={this.state.data.longitude} />
         </div>);
     
-    componentDidMount() {
-        let username = this.props.match.params;
-        if (!username) return <Redirect to='/' />
+    async getUserData(username: string) {
+        try {
+            let response = await fetch(BASEURL + '/user/' + username);        
+            if (response.status === 401) this.setState({ loading: false, authorized: false });     
+            else if (response.status === 404) this.setState({ loading: false, found: false });     
+            else {
+                //TODO: GET with token (if any). 
+                //TODO: If unauthorized, refresh tokens, then try again.        
+                let json = await response.json() as UserData;
+                if (json === undefined) {
+                    this.setState((p, ps) => ({found: false}));
+                    return;
+                }
+                this.setState({
+                    data: json,
+                    found: true,
+                    loading: false, 
+                    authorized: true
+                });
+            }
+        }
+        catch (e) {
+            this.setState({ loading: false, authorized: false });            
+        }
+    }
 
-        //TODO: Fetch whether username is public, if not prompt to log in, otherwise show.
-        //TODO: GET with token (if any). 
-        //      If unauthorized, refresh tokens, then try again. 
-        fetch(BASEURL + '/visibility?username=' + username)
-            .then(res => res.json())
-            .then(
-                allowed => this.setState({ loading: false, authorized: true }),
-                error => this.setState({ loading: false, authorized: false  })
-            );
+    async componentDidMount() {
+        let username = this.props.match.params && this.props.match.params.username;
+        if (!username) return <Redirect to='/' />
+        await this.getUserData(username);
     }
 
     render() {
         if (this.state.loading) return this.renderLoading();
         if (this.state.authorized) return this.renderUserPage();
+        if (this.state.found === false) return this.renderNotFound();
         return this.renderUnauthorized();
     }
 }

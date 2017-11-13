@@ -1,14 +1,19 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
+import { Logout } from './login/Logout';
 
-export class Header extends React.Component<any, any> {
-render() { return (
+interface HeaderState {
+    loggedIn: boolean
+}
+
+export class Header extends React.Component<{}, HeaderState> {
+    render() { return (
         <header>
             <nav>
                 <ul>
                     <li><Link to='/'>Home</Link></li>
                     <li><Link to='/login'>Log in</Link></li>
-                    <li><Link to='/logout'>Log out</Link></li>
+                    <Logout />
                 </ul>
             </nav>
         </header>

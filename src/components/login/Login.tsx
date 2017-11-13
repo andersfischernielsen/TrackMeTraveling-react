@@ -19,6 +19,7 @@ export class Login extends React.Component<{}, ILoginState> {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);        
         this.handleChange = this.handleChange.bind(this);     
+        this.state = {username: undefined, password: undefined, remember: false, shouldRedirect: false};
     }
 
     async handleSubmit(event:any) {
@@ -40,9 +41,9 @@ export class Login extends React.Component<{}, ILoginState> {
             if (response.status == 401) return;
             let json = await response.json() as ITokens;
             this.storeTokens(json);
-            return <Redirect to={`/${this.state.username}`} />
+            this.setState((prev, props) => ({shouldRedirect: true}));
         } catch {
-            //TODO: Do things when error occures.
+            
         }
     }
 
@@ -62,8 +63,7 @@ export class Login extends React.Component<{}, ILoginState> {
     }
     
     render() {
-        let shouldRedirect = this.state;
-
+        if (this.state.shouldRedirect === true) return (<Redirect to={`user/${this.state.username}`} />);
         return (
             <div>
                 <h1>Login</h1>
