@@ -1,7 +1,7 @@
 import { Tokens, storeTokens } from './LoginHelper';
 import { BASEURL } from './config';
 
-export async function fetchWithToken(url: string) {
+export async function fetchWithToken(url: string, httpMethod: string = undefined) {
     let local = localStorage.length > 0;
     let session = sessionStorage.length > 0;
     var keys : Tokens;
@@ -20,26 +20,26 @@ export async function fetchWithToken(url: string) {
         "Access-Control-Allow-Origin": "no-cors"
     });
 
-    let options : any = {
-        headers: headers
-    };
+    let options : any = { headers: headers };
+    if (httpMethod !== undefined) options.method = httpMethod;
     
     //Try to get (with tokens if present).
-    let initialResponse = await fetch(getTokenURL(url));        
+    let initialResponse = await fetch(getTokenURL(url), options);        
     if (initialResponse.status === 401) {
         //If no tokens are present, return received 401.
         if (!local && !session) return initialResponse; 
         
         //Attempt to refresh tokens.
-        options.method = 'POST'
-        options.body = JSON.stringify({ refresh_token: keys.refresh_token });
-        let refreshResponse = await fetch(BASEURL + '/refreshtoken');
+        let refreshOptions = { method: 'POST', body: JSON.stringify({ refresh_token: keys.refresh_token })};
+        Object.assign(refreshOptions, options);
+        if (httpMethod !== undefined) refreshOptions.method = 'POST';
+        let refreshResponse = await fetch(BASEURL + '/refreshtoken', refreshOptions);
         if (refreshResponse.status !== 200) return refreshResponse;
         
         //Save tokens, retry call.
         let json = await refreshResponse.json() as Tokens;
         storeTokens(json, session !== undefined)
-        return await fetch(getTokenURL(url));
+        return await fetch(getTokenURL(url), options);
     }
     else return initialResponse;
 }
