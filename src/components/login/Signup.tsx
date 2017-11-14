@@ -1,7 +1,9 @@
 import * as React from "react";
 import { Redirect } from "react-router";
 import { BASEURL } from '../../config' 
-import { Tokens, storeTokens } from './LoginHelper' 
+import { Tokens, storeTokens } from './../../LoginHelper' 
+import { connect } from 'react-redux';
+import { login, Store } from '../../redux/reducer';
 
 export interface SignupState {
     username: string,
@@ -10,7 +12,12 @@ export interface SignupState {
     shouldRedirect: boolean
 } 
 
-export class Signup extends React.Component<{}, SignupState> {
+interface SignupProps {
+    loggedIn: boolean,
+    login: any
+}
+
+export class SignupComponent extends React.Component<SignupProps, SignupState> {
     constructor(props:any) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);        
@@ -36,8 +43,8 @@ export class Signup extends React.Component<{}, SignupState> {
             let response = await fetch(BASEURL + '/user', options);
             if (response.status == 409) return;
             let json = await response.json() as Tokens;
-            storeTokens(json, this.state.username, false);
-            this.setState((prev, props) => ({shouldRedirect: true}));
+            storeTokens(json, false);
+            this.props.login(this.state.username);
         } catch {
             
         }
@@ -49,7 +56,7 @@ export class Signup extends React.Component<{}, SignupState> {
     }
     
     render() {
-        if (this.state.shouldRedirect === true) return (<Redirect to='/' />);
+        if (this.props.loggedIn) return (<Redirect to='/' />);
         return (
             <div>
                 <h1>Sign up</h1>
@@ -63,3 +70,17 @@ export class Signup extends React.Component<{}, SignupState> {
         );
     }
 }
+
+const mapStateToProps = (state:Store) => {
+    return {
+        loggedIn: state.isLoginSuccess
+    };
+  }
+  
+const mapDispatchToProps = (dispatch:any) => {
+    return {
+        login: (username:string) => dispatch(login(username))
+    };
+}
+  
+export const Signup = connect(mapStateToProps, mapDispatchToProps)(SignupComponent);

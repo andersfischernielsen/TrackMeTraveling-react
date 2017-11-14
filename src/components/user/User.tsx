@@ -5,6 +5,7 @@ import { UsernameHeading } from "./Hello"
 import { MapView } from "./MapView"
 import { NearbySights } from "./NearbySights";
 import { BASEURL } from '../../config'
+import { fetchWithToken } from '../../FetchHelper'
 
 
 export interface UserData {
@@ -47,12 +48,10 @@ export class User extends React.Component<RouteComponentProps<any>, UserState> {
     
     async getUserData(username: string) {
         try {
-            let response = await fetch(BASEURL + '/user/' + username);        
+            let response = await fetchWithToken(BASEURL + '/user/' + username);        
             if (response.status === 401) this.setState({ loading: false, authorized: false });     
             else if (response.status === 404) this.setState({ loading: false, found: false });     
-            else {
-                //TODO: GET with token (if any). 
-                //TODO: If unauthorized, refresh tokens, then try again.        
+            else {   
                 let json = await response.json() as UserData;
                 if (json === undefined) {
                     this.setState((p, ps) => ({found: false}));

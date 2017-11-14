@@ -1,27 +1,47 @@
 import * as React from 'react'
 import { Redirect, Link } from 'react-router-dom'
-
+import { connect } from 'react-redux';
+import { logout, Store } from '../../redux/reducer';
 
 interface LogoutState {
-    redirect: boolean;
+    loggedOut: boolean;
 }
 
-export class Logout extends React.Component<{}, LogoutState> {
+interface LogoutProps {
+    loggedOut: boolean,
+    logout: any
+}
+
+export class LogoutComponent extends React.Component<any, LogoutState> {
     constructor() {
         super();
-        let cookiesPresent = localStorage.length > 0 || sessionStorage.length > 0;
         this.clearStorage = this.clearStorage.bind(this);    
-        this.state = {redirect: false};         
+        this.state = {loggedOut: false};         
     }
     
     clearStorage() {
         localStorage.clear();
         sessionStorage.clear();
-        this.setState({redirect: true});
+        this.props.logout();
+        this.setState({loggedOut: true});
     }
 
     render() {
-        if (this.state.redirect) return (<Redirect to='/' />);
+        if (this.state.loggedOut || this.props.loggedOut) return (<Redirect to='/' />);
         return (<Link className="nav-link" to='' onClick={this.clearStorage}>Log out</Link>);
     }
 }
+
+const mapStateToProps = (state:Store) => {
+    return {
+        loggedOut: !state.isLoginSuccess
+    };
+  }
+  
+const mapDispatchToProps = (dispatch:any) => {
+    return {
+        logout: () => dispatch(logout())
+    };
+}
+  
+export const Logout = connect(mapStateToProps, mapDispatchToProps)(LogoutComponent);

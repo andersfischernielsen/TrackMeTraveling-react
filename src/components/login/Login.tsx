@@ -1,21 +1,28 @@
 import * as React from "react";
 import { Redirect } from "react-router";
 import { BASEURL } from '../../config' 
-import { Tokens, storeTokens } from './LoginHelper' 
+import { connect } from 'react-redux';
+import { Tokens, storeTokens } from './../../LoginHelper' 
+import { login, Store } from '../../redux/reducer';
 
-export interface ILoginState {
+export interface LoginState {
     username: string,
     password: string,
     remember: boolean,
-    shouldRedirect: boolean
+    loggedIn: boolean
 } 
 
-export class Login extends React.Component<{}, ILoginState> {
+interface LoginProps {
+    loggedIn: boolean,
+    login: any
+}
+
+class LoginComponent extends React.Component<LoginProps, LoginState> {
     constructor(props:any) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);        
         this.handleChange = this.handleChange.bind(this);     
-        this.state = {username: undefined, password: undefined, remember: false, shouldRedirect: false};
+        this.state = {username: undefined, password: undefined, remember: false, loggedIn: false};
     }
 
     async handleSubmit(event:any) {
@@ -36,8 +43,8 @@ export class Login extends React.Component<{}, ILoginState> {
             let response = await fetch(BASEURL + '/auth', options);
             if (response.status == 401) return;
             let json = await response.json() as Tokens;
-            storeTokens(json, this.state.username, this.state.remember);
-            this.setState((prev, props) => ({shouldRedirect: true}));
+            storeTokens(json, this.state.remember);
+            this.props.login(this.state.username);
         } catch {
             
         }
@@ -50,7 +57,7 @@ export class Login extends React.Component<{}, ILoginState> {
     }
     
     render() {
-        if (this.state.shouldRedirect === true) return (<Redirect to={`user/${this.state.username}`} />);
+        if (this.props.loggedIn) return (<Redirect to={`user/${this.state.username}`} />);
         return (
             <div>
                 <h1>Login</h1>
@@ -66,3 +73,17 @@ export class Login extends React.Component<{}, ILoginState> {
         );
     }
 }
+
+const mapStateToProps = (state:Store) => {
+    return {
+        loggedIn: state.isLoginSuccess
+    };
+  }
+  
+const mapDispatchToProps = (dispatch:any) => {
+    return {
+        login: (username:string) => dispatch(login(username))
+    };
+}
+  
+export const Login = connect(mapStateToProps, mapDispatchToProps)(LoginComponent);
