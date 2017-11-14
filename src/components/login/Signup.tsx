@@ -3,19 +3,19 @@ import { Redirect } from "react-router";
 import { BASEURL } from '../../config' 
 import { Tokens, storeTokens } from './LoginHelper' 
 
-export interface ILoginState {
+export interface SignupState {
     username: string,
     password: string,
-    remember: boolean,
+    email: string,
     shouldRedirect: boolean
 } 
 
-export class Login extends React.Component<{}, ILoginState> {
+export class Signup extends React.Component<{}, SignupState> {
     constructor(props:any) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);        
         this.handleChange = this.handleChange.bind(this);     
-        this.state = {username: undefined, password: undefined, remember: false, shouldRedirect: false};
+        this.state = {username: undefined, email: undefined, password: undefined, shouldRedirect: false};
     }
 
     async handleSubmit(event:any) {
@@ -33,10 +33,10 @@ export class Login extends React.Component<{}, ILoginState> {
         };
 
         try {
-            let response = await fetch(BASEURL + '/auth', options);
-            if (response.status == 401) return;
+            let response = await fetch(BASEURL + '/user', options);
+            if (response.status == 409) return;
             let json = await response.json() as Tokens;
-            storeTokens(json, this.state.username, this.state.remember);
+            storeTokens(json, this.state.username, false);
             this.setState((prev, props) => ({shouldRedirect: true}));
         } catch {
             
@@ -45,22 +45,19 @@ export class Login extends React.Component<{}, ILoginState> {
 
     handleChange(event:any) {
         let target = event.target;
-        let value = target.type === 'checkbox' ? target.checked : target.value;
-        this.setState({[target.name]: value});
+        this.setState({[target.name]: target.value});
     }
     
     render() {
-        if (this.state.shouldRedirect === true) return (<Redirect to={`user/${this.state.username}`} />);
+        if (this.state.shouldRedirect === true) return (<Redirect to='/' />);
         return (
             <div>
-                <h1>Login</h1>
+                <h1>Sign up</h1>
                 <form onSubmit={this.handleSubmit}> 
+                <input type="email" name="email" placeholder="E-mail" onChange={this.handleChange}></input>
                 <input type="text" name="username" placeholder="Username" onChange={this.handleChange}></input>
                 <input name="password" placeholder="Password" type="password" onChange={this.handleChange}></input>
-                <label> Remember me
-                    <input name="remember" type="checkbox" onChange={this.handleChange}></input>
-                </label>
-                <input type="submit" value="Submit"></input>
+                <input type="submit" value="Sign up"></input>
                 </form>
             </div>
         );

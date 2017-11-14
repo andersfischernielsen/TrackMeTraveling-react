@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Redirect } from 'react-router-dom'
+import { Redirect, Link } from 'react-router-dom'
 
 
 interface LogoutState {
@@ -10,7 +10,8 @@ export class Logout extends React.Component<{}, LogoutState> {
     constructor() {
         super();
         let cookiesPresent = localStorage.length > 0 || sessionStorage.length > 0;
-        this.clearStorage = this.clearStorage.bind(this);             
+        this.clearStorage = this.clearStorage.bind(this);    
+        this.state = {redirect: false};         
     }
     
     clearStorage() {
@@ -21,8 +22,6 @@ export class Logout extends React.Component<{}, LogoutState> {
 
     render() {
         if (this.state.redirect) return (<Redirect to='/' />);
-        return (<li>
-            <a onClick={this.clearStorage}>Log out</a>
-        </li>);
+        return (<Link className="nav-link" to='' onClick={this.clearStorage}>Log out</Link>);
     }
 }

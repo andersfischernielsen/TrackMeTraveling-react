@@ -39,7 +39,7 @@ export class User extends React.Component<RouteComponentProps<any>, UserState> {
     renderNotFound = () => (<div>User not found.</div>);
     renderUnauthorized = () => (<div>This user is private.</div>);
     renderUserPage = () => (
-        <div>
+        <div className="row">
             <UsernameHeading username={this.state.data.username} />
             <MapView latitude={this.state.data.latitude} longitude={this.state.data.longitude} />
             <NearbySights latitude={this.state.data.latitude} longitude={this.state.data.longitude} />

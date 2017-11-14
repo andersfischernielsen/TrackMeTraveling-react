@@ -9,12 +9,16 @@ interface HeaderState {
 export class Header extends React.Component<{}, HeaderState> {
     render() { return (
         <header>
-            <nav>
-                <ul>
-                    <li><Link to='/'>Home</Link></li>
-                    <li><Link to='/login'>Log in</Link></li>
-                    <Logout />
-                </ul>
+            <nav className="nav navbar navbar-expand-lg">
+                <Link className="navbar-brand" to='/'>Home</Link>
+
+                <div className="collapse navbar-collapse">
+                    <ul className="navbar-nav">
+                        <li className="nav-item"><Link className="nav-link" to='/signup'>Sign up</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to='/login'>Log in</Link></li>
+                        <li className="nav-item"><Logout /></li>
+                    </ul>
+                </div>
             </nav>
         </header>
         );
