@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Redirect } from 'react-router';
 import { BASEURL } from '../../config';
 import { Tokens, storeTokens } from './../../LoginHelper'; 
+/*
 import { connect } from 'react-redux';
 import { login, Store } from '../../redux/reducer';
+*/
 
 export interface SignupState {
     username: string;
@@ -14,6 +15,7 @@ export interface SignupState {
 
 interface SignupProps {
     loggedIn: boolean;
+    shouldShow: boolean;
     login: any;
 }
 
@@ -54,9 +56,7 @@ export class SignupComponent extends React.Component<SignupProps, SignupState> {
     }
     
     render() {
-        if (this.props.loggedIn) {
-            return (<Redirect to="/" />);
-        }
+        if (this.props.shouldShow === false) { return null; }
         return (
             <div>
                 <h1>Sign up</h1>
@@ -71,16 +71,4 @@ export class SignupComponent extends React.Component<SignupProps, SignupState> {
     }
 }
 
-const mapStateToProps = (state: Store) => {
-    return {
-        loggedIn: state.isLoginSuccess
-    };
-};
-  
-const mapDispatchToProps = (dispatch: any) => {
-    return {
-        login: (username: string) => dispatch(login(username))
-    };
-};
-  
-export const Signup = connect(mapStateToProps, mapDispatchToProps)(SignupComponent);
+export const Signup = /*connect(mapStateToProps, mapDispatchToProps)(*/SignupComponent/*)*/;

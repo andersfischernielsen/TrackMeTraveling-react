@@ -20,7 +20,7 @@ export async function fetchWithToken(url: string, httpMethod: string = '') {
         'Access-Control-Allow-Origin': 'no-cors'
     });
 
-    let options: any = { headers: headers };
+    let options: RequestInit = { headers: headers };
     if (httpMethod !== undefined) {
         options.method = httpMethod;
     }
