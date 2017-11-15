@@ -1,13 +1,16 @@
-export function storeTokens(tokens:Tokens, remember: boolean) {
-    if (tokens === undefined) return;
+export function storeTokens(tokens: Tokens, remember: boolean) {
+    if (tokens === undefined) {
+        return;
+    }
     let storage = remember ? localStorage : sessionStorage;
-    let access_token_key = 'access_token';
-    let refresh_token_key = 'refresh_token';
-    storage.setItem(access_token_key, tokens.access_token);
-    storage.setItem(refresh_token_key, tokens.refresh_token);
+    let accessTokenKey = 'access_token';
+    let refreshTokenKey = 'refresh_token';
+
+    storage.setItem(accessTokenKey, tokens.access_token as string);
+    storage.setItem(refreshTokenKey, tokens.refresh_token as string);
 }
 
 export interface Tokens {
-    access_token: string,
-    refresh_token: string
+    access_token: string | undefined | null;
+    refresh_token: string | undefined | null;
 }

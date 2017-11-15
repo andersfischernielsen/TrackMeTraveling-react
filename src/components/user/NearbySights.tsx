@@ -1,6 +1,6 @@
-import * as React from "react";
+import * as React from 'react';
 
-export interface NearbySightsProperties { latitude: number; longitude: number }
+export interface NearbySightsProperties { latitude: number; longitude: number; }
 export class NearbySights extends React.Component<NearbySightsProperties, {}> {
     render() {
         return (

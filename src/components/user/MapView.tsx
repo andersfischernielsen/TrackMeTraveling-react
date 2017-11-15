@@ -1,11 +1,11 @@
-import * as React from "react"
-const { withScriptjs, withGoogleMap, GoogleMap, Marker } = require("react-google-maps");
+import * as React from 'react';
+const { withScriptjs, withGoogleMap, GoogleMap, Marker } = require('react-google-maps');
 
-export interface MapViewProperties { latitude: number, longitude: number }
+export interface MapViewProperties { latitude: number; longitude: number; isMarkerShown: boolean; }
 export class MapView extends React.Component<MapViewProperties, {}> {
     render() {
         let coordinates = { lat: this.props.latitude, lng: this.props.longitude };
-        let TrackMeMap = withScriptjs(withGoogleMap((props:any) => (
+        let TrackMeMap = withScriptjs(withGoogleMap((props: MapViewProperties) => (
             <GoogleMap defaultZoom={15} defaultCenter={coordinates}>
                 {props.isMarkerShown && <Marker position={coordinates} />}
             </GoogleMap>
