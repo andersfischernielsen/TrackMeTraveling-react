@@ -2,8 +2,8 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Redirect } from 'react-router-dom';
 import { UsernameHeading } from './Hello';
-import { MapView } from './MapView';
-import { NearbySights } from './NearbySights';
+import { MapView } from '../plugins/MapView';
+import { NearbySights } from '../plugins/NearbySights';
 import { BASEURL } from '../../config';
 import { fetchWithToken } from '../../FetchHelper';
 

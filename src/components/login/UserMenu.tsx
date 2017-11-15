@@ -7,6 +7,8 @@ interface UserMenuProps {
     login: (loggedIn: string) => {};
 }
 
+// TODO: Implement check for tokens on launch. If present, try to log in. 
+
 class UserMenuComponent extends React.Component<UserMenuProps, {}> {
     renderComponent() {
         return (
