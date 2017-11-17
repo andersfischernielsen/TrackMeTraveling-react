@@ -14,7 +14,7 @@ export interface LoginState {
 
 interface LoginProps {
     loggedIn: boolean;
-    login: (loggedIn: string) => {};
+    login: (username: string, accessToken: string, refreshToken: string) => {};
 }
 
 class LoginComponent extends React.Component<LoginProps, LoginState> {
@@ -42,8 +42,8 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
         let response = await fetch(BASEURL + '/auth', options);
         if (response.status === 401) { return; }
         let json = await response.json() as Tokens;
-        storeTokens(json, this.state.remember);
-        this.props.login(this.state.username);
+        storeTokens(json, this.state.username, this.state.remember);
+        this.props.login(this.state.username, json.access_token as string, json.refresh_token as string);
     }
 
     handleChange(event: any) {
@@ -75,13 +75,14 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 
 const mapStateToProps = (state: Store) => {
     return {
-        loggedIn: state.isLoginSuccess
+        loggedIn: state.loggedIn
     };
 };
   
 const mapDispatchToProps = (dispatch: any) => {
     return {
-        login: (username: string) => dispatch(login(username))
+        login: (username: string, accessToken: string, refreshToken: string) => 
+            dispatch(login(username, accessToken, refreshToken))
     };
 };
   

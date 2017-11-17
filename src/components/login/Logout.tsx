@@ -36,7 +36,7 @@ export class LogoutComponent extends React.Component<LogoutProps, LogoutState> {
 
 const mapStateToProps = (state: Store) => {
     return {
-        loggedOut: !state.isLoginSuccess
+        loggedOut: !state.loggedIn
     };
 };
   

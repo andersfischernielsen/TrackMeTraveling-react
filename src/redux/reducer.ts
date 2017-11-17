@@ -1,41 +1,56 @@
-const SET_LOGIN_SUCCESS = 'SET_LOGIN_SUCCESS';
-const SET_LOGOUT_SUCCESS = 'SET_LOGOUT_SUCCESS';
+const LOGIN = 'LOGIN';
+const LOGOUT = 'LOGOUT';
 
-export function login(username: string) {
+export function login(username: string, accessToken: string, refreshToken: string) {
     return (dispatch: any) => {
-        dispatch(setLoginSuccess(true));
+        dispatch(loginUser(username, accessToken, refreshToken));
     };
 }
 
 export function logout() {
     return (dispatch: any) => {
-        dispatch(setLoginSuccess(false));
+        dispatch(logoutUser());
     };
 }
 
-function setLoginSuccess(isLoginSuccess: boolean) {
+function loginUser(username: string|undefined, accessToken: string|undefined, refreshToken: string|undefined) {
     return {
-        type: SET_LOGIN_SUCCESS,
-        isLoginSuccess
+        type: LOGIN,
+        username: username, 
+        accessToken: accessToken,
+        refreshToken: refreshToken
     };
 }
 
-export default function reducer(state: Store = { isLoginSuccess: false }, action: any) {
+function logoutUser() {
+    return {
+        type: LOGOUT,
+    };
+}
+
+export default function reducer(state: Store, action: any): Store {
     switch (action.type) {
-        case SET_LOGIN_SUCCESS:
-            return Object.assign({}, state, {
-                isLoginSuccess: action.isLoginSuccess
-            });
-
-        case SET_LOGOUT_SUCCESS:
-            return Object.assign({}, state, {
-                isLoginSuccess: action.isLoginSuccess
-            });
-
+        case LOGIN:
+            return {
+                username: action.username,
+                accessToken: action.accessToken,
+                refreshToken: action.refreshToken,
+                loggedIn: true
+            };
+        case LOGOUT:
+            return {
+                username: undefined,
+                accessToken: undefined,
+                refreshToken: undefined,
+                loggedIn: false
+            };
         default: return state;
     }
 }
 
 export interface Store {
-    isLoginSuccess: boolean;
+    username: string | undefined;
+    accessToken: string | undefined;
+    refreshToken: string | undefined;
+    loggedIn: boolean;
 }

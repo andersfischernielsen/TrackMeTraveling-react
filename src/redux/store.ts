@@ -2,5 +2,12 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import reducer from './reducer';
 
-const store = createStore(reducer, { isLoginSuccess: false }, applyMiddleware(thunk));
+const initial = {
+    username: undefined,
+    accessToken: undefined,
+    refreshToken: undefined,
+    loggedIn: false
+};
+
+const store = createStore(reducer, initial, applyMiddleware(thunk));
 export { store };

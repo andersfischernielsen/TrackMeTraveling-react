@@ -46,6 +46,8 @@ export async function fetchWithToken(url: string, httpMethod: string = '') {
         
         // Save tokens, retry call.
         let json = await refreshResponse.json() as Tokens;
+
+        // TODO: Only use redux storage for user info etc. NO LOCAL/SESSIONSTORAGE!
         storeTokens(json, session !== undefined);
         return await fetch(getTokenURL(url), options);
     } else {
@@ -53,9 +55,11 @@ export async function fetchWithToken(url: string, httpMethod: string = '') {
     }
 }
 
-function getTokensFromStorage(storage: Storage): Tokens {
+export function getTokensFromStorage(storage: Storage): Tokens {
     return { 
         access_token: storage.getItem('access_token'), 
         refresh_token: storage.getItem('refresh_token')
     };
 }
+
+export const getUsernameFromStorage = (storage: Storage) => storage.getItem('username');  

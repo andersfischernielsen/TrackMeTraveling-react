@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { BASEURL } from '../../config';
 import { Tokens, storeTokens } from './../../LoginHelper'; 
-/*
 import { connect } from 'react-redux';
 import { login, Store } from '../../redux/reducer';
-*/
 
 export interface SignupState {
     username: string;
@@ -16,7 +14,7 @@ export interface SignupState {
 interface SignupProps {
     loggedIn: boolean;
     shouldShow: boolean;
-    login: any;
+    login: (username: string, accessToken: string, refreshToken: string) => {};
 }
 
 export class SignupComponent extends React.Component<SignupProps, SignupState> {
@@ -46,8 +44,8 @@ export class SignupComponent extends React.Component<SignupProps, SignupState> {
             return;
         }
         let json = await response.json() as Tokens;
-        storeTokens(json, false);
-        this.props.login(this.state.username);
+        storeTokens(json, this.state.username, false);
+        this.props.login(this.state.username, json.access_token as string, json.refresh_token as string);
     }
 
     handleChange(event: any) {
@@ -71,4 +69,17 @@ export class SignupComponent extends React.Component<SignupProps, SignupState> {
     }
 }
 
-export const Signup = /*connect(mapStateToProps, mapDispatchToProps)(*/SignupComponent/*)*/;
+const mapStateToProps = (state: Store) => {
+    return {
+        loggedIn: state.loggedIn
+    };
+};
+  
+const mapDispatchToProps = (dispatch: any) => {
+    return {
+        login: (username: string, accessToken: string, refreshToken: string) => 
+            dispatch(login(username, accessToken, refreshToken))
+    };
+};
+
+export const Signup = connect(mapStateToProps, mapDispatchToProps)(SignupComponent);

@@ -39,7 +39,7 @@ export class HeaderComponent extends React.Component<HeaderProps, {}> {
 
 const mapStateToProps = (state: Store) => {
     return {
-        loggedIn: state.isLoginSuccess
+        loggedIn: state.loggedIn
     };
 };
   
