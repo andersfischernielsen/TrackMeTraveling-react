@@ -1,18 +1,12 @@
-import { Tokens, storeTokens } from './LoginHelper';
+import { Tokens, storeState } from './LoginHelper';
 import { BASEURL } from './config';
+import { store } from './redux/store';
+import { login, Store } from './redux/reducer';
 
 export async function fetchWithToken(url: string, httpMethod: string = '') {
-    let local = localStorage.length > 0;
-    let session = sessionStorage.length > 0;
-    var keys: Tokens = { access_token: undefined, refresh_token: undefined};
-
-    if (local || session) {
-        let storage = local ? localStorage : sessionStorage;
-        keys = getTokensFromStorage(storage);
-    }
-
+    var state = store.getState();
     let getTokenURL = (u: string) =>
-        (local || session) ? u + `?access_token=${keys.access_token}` : u;
+        (state) ? u + `?access_token=${state.accessToken}` : u;
 
     let headers = new Headers({
         'Content-Type': 'application/json',
@@ -20,23 +14,24 @@ export async function fetchWithToken(url: string, httpMethod: string = '') {
         'Access-Control-Allow-Origin': 'no-cors'
     });
 
-    let options: RequestInit = { headers: headers };
-    if (httpMethod !== undefined) {
+    let options: RequestInit = { headers: headers, method: 'GET' };
+    if (httpMethod) {
         options.method = httpMethod;
     }
     
     // Try to get (with tokens if present).
-    let initialResponse = await fetch(getTokenURL(url), options);        
+    let withToken = getTokenURL(url);
+    let initialResponse = await fetch(withToken, options);        
     if (initialResponse.status === 401) {
         // If no tokens are present, return received 401.
-        if (!local && !session) {
+        if (!state.accessToken || !state.refreshToken) {
             return initialResponse; 
         }
         
         // Attempt to refresh tokens.
-        let refreshOptions = { method: 'POST', body: JSON.stringify({ refresh_token: keys.refresh_token })};
+        let refreshOptions = { method: 'POST', body: JSON.stringify({ refresh_token: state.refreshToken })};
         Object.assign(refreshOptions, options);
-        if (httpMethod !== undefined) {
+        if (!httpMethod) {
             refreshOptions.method = 'POST';
         }
         let refreshResponse = await fetch(BASEURL + '/refreshtoken', refreshOptions);
@@ -46,20 +41,20 @@ export async function fetchWithToken(url: string, httpMethod: string = '') {
         
         // Save tokens, retry call.
         let json = await refreshResponse.json() as Tokens;
-
-        // TODO: Only use redux storage for user info etc. NO LOCAL/SESSIONSTORAGE!
-        storeTokens(json, session !== undefined);
-        return await fetch(getTokenURL(url), options);
+        store.dispatch(login(state.username as string, json.access_token as string, json.refresh_token as string));
+        storeState();
+        let withNewToken = getTokenURL(url);
+        return await fetch(withNewToken, options);
     } else {
         return initialResponse;
     }
 }
 
-export function getTokensFromStorage(storage: Storage): Tokens {
-    return { 
-        access_token: storage.getItem('access_token'), 
-        refresh_token: storage.getItem('refresh_token')
-    };
-}
+export function getTokensFromStorage(storage: Storage): Store|undefined {
+    let state = storage.getItem('state');
+    if (!state) {
+        return undefined; 
+    }
 
-export const getUsernameFromStorage = (storage: Storage) => storage.getItem('username');  
+    return JSON.parse(state);
+}

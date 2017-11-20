@@ -13,7 +13,7 @@ export function logout() {
     };
 }
 
-function loginUser(username: string|undefined, accessToken: string|undefined, refreshToken: string|undefined) {
+function loginUser(username: string, accessToken: string, refreshToken: string) {
     return {
         type: LOGIN,
         username: username, 

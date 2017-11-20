@@ -1,37 +1,49 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { login, Store } from '../../redux/reducer';
-import { Tokens, storeTokens } from '../../LoginHelper';
+import { store } from '../../redux/store';
+import { storeState } from '../../LoginHelper';
 import { getTokensFromStorage } from '../../FetchHelper';
 
 interface UserMenuProps {
     loggedIn: boolean;
+    username: string;
     login: (loggedIn: string, accessToken: string, refreshToken: string) => {};
 }
-
-// TODO: Implement check for tokens on launch. If present, try to log in. 
 
 class UserMenuComponent extends React.Component<UserMenuProps, {}> {
     renderComponent() {
         return (
-            <div>Logged in</div>
+            <div className="row">
+                <div className="col-xs-3">
+                    <img src="https://placeholdit.co//i/80x80" width="40px" height="40px"/>
+                </div>
+                <div className="col-sm-7 offset-sm-1">
+                    <p>{this.props.username}</p>
+                </div>
+            </div>
         );
     }
 
     checkForTokens() {
-        let session = sessionStorage.length > 0;
-        // TODO: Move storage fetch to helper. 
-        let storage = session ? sessionStorage : localStorage; 
-        let tokens = getTokensFromStorage(storage) as Tokens;
-        let username = getUsernameFromStorage(storage);
-        let {access_token} = tokens;
-        let {refresh_token} = tokens;
-        if (access_token === undefined || access_token === null 
-            || refresh_token === undefined || refresh_token === null) {
-                return;
+        let state = store.getState();
+        if (!state || state.loggedIn === true) {
+            return;
         }
-        storeTokens(tokens, false);
-        this.props.login(username, access_token, refresh_token);
+        let fromStorage = getTokensFromStorage(localStorage) as Store;
+        if (!fromStorage || !fromStorage.accessToken || !fromStorage.refreshToken) {
+            return;
+        }
+
+        let accessToken = fromStorage.accessToken as string;
+        let username = fromStorage.username as string;
+        let refreshToken = fromStorage.refreshToken as string;
+        if (accessToken === undefined && username === undefined && refreshToken === undefined) {
+            return;
+        }
+
+        this.props.login(username, accessToken, refreshToken);
+        storeState();
     }
     
     render() { 
@@ -42,7 +54,8 @@ class UserMenuComponent extends React.Component<UserMenuProps, {}> {
 
 const mapStateToProps = (state: Store) => {
     return {
-        loggedIn: state.loggedIn
+        loggedIn: state.loggedIn,
+        username: state.username
     };
 };
   

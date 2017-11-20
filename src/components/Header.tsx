@@ -11,10 +11,15 @@ interface HeaderProps {
 
 export class HeaderComponent extends React.Component<HeaderProps, {}> {
     renderLoginLogout(loggedIn: boolean) {
-        // TODO: Move to own components render()? 
         return loggedIn 
             ? <li className="nav-item"><Logout /></li>
             : <li className="nav-item"><Link className="nav-link" to="/login">Log in</Link></li>;
+    }
+
+    renderSignup(loggedIn: boolean) {
+        return loggedIn 
+            ? null
+            : <li className="nav-item"><Link className="nav-link" to="/signup">Sign up</Link></li>;
     }
 
     render() { return (
@@ -24,7 +29,7 @@ export class HeaderComponent extends React.Component<HeaderProps, {}> {
 
                 <div className="collapse navbar-collapse">
                     <ul className="navbar-nav mr-auto">
-                        <li className="nav-item"><Link className="nav-link" to="/signup">Sign up</Link></li>
+                        {this.renderSignup(this.props.loggedIn)}
                         {this.renderLoginLogout(this.props.loggedIn)}
                     </ul>
                     <ul className="navbar-nav">

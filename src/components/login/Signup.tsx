@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BASEURL } from '../../config';
-import { Tokens, storeTokens } from './../../LoginHelper'; 
+import { Tokens, storeState } from './../../LoginHelper'; 
 import { connect } from 'react-redux';
 import { login, Store } from '../../redux/reducer';
 
@@ -44,8 +44,8 @@ export class SignupComponent extends React.Component<SignupProps, SignupState> {
             return;
         }
         let json = await response.json() as Tokens;
-        storeTokens(json, this.state.username, false);
         this.props.login(this.state.username, json.access_token as string, json.refresh_token as string);
+        storeState();
     }
 
     handleChange(event: any) {

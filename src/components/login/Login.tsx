@@ -2,13 +2,12 @@ import * as React from 'react';
 import { Redirect } from 'react-router';
 import { BASEURL } from '../../config';
 import { connect } from 'react-redux';
-import { Tokens, storeTokens } from './../../LoginHelper'; 
+import { Tokens, storeState } from './../../LoginHelper'; 
 import { login, Store } from '../../redux/reducer';
 
 export interface LoginState {
     username: string;
     password: string;
-    remember: boolean;
     loggedIn: boolean;
 } 
 
@@ -22,7 +21,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);        
         this.handleChange = this.handleChange.bind(this);     
-        this.state = {username: '', password: '', remember: false, loggedIn: false};
+        this.state = {username: '', password: '', loggedIn: false};
     }
 
     async handleSubmit(event: any) {
@@ -42,13 +41,13 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
         let response = await fetch(BASEURL + '/auth', options);
         if (response.status === 401) { return; }
         let json = await response.json() as Tokens;
-        storeTokens(json, this.state.username, this.state.remember);
-        this.props.login(this.state.username, json.access_token as string, json.refresh_token as string);
+        this.props.login(this.state.username, json.access_token as string, json.refresh_token as string);        
+        storeState();
     }
 
     handleChange(event: any) {
         let target = event.target;
-        let value = target.type === 'checkbox' ? target.checked : target.value;
+        let value = target.value;
         this.setState({[target.name]: value});
     }
 
@@ -63,9 +62,6 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
                 <form onSubmit={this.handleSubmit}> 
                 <input type="text" name="username" placeholder="Username" onChange={this.handleChange} />
                 <input name="password" placeholder="Password" type="password" onChange={this.handleChange} />
-                <label> Remember me
-                    <input name="remember" type="checkbox" onChange={this.handleChange} />
-                </label>
                 <input type="submit" value="Submit" />
                 </form>
             </div>

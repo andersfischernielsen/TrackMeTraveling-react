@@ -1,15 +1,8 @@
-export function storeTokens(tokens: Tokens, username: string, remember: boolean) {
-    if (tokens === undefined) {
-        return;
-    }
-    let storage = remember ? localStorage : sessionStorage;
-    let accessTokenKey = 'access_token';
-    let refreshTokenKey = 'refresh_token';
-    let usernameKey = 'username';
+import { store } from './redux/store';
 
-    storage.setItem(accessTokenKey, tokens.access_token as string);
-    storage.setItem(refreshTokenKey, tokens.refresh_token as string);
-    storage.setItem(usernameKey, username as string);
+export function storeState() {
+    let stateKey = 'state';
+    localStorage.setItem(stateKey, JSON.stringify(store.getState()));
 }
 
 export interface Tokens {
