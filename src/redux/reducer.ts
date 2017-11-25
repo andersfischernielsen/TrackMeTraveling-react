@@ -49,8 +49,8 @@ export default function reducer(state: Store, action: any): Store {
 }
 
 export interface Store {
-    username: string | undefined;
-    accessToken: string | undefined;
-    refreshToken: string | undefined;
+    username?: string;
+    accessToken?: string;
+    refreshToken?: string;
     loggedIn: boolean;
 }

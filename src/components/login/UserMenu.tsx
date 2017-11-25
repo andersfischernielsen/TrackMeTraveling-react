@@ -42,6 +42,7 @@ class UserMenuComponent extends React.Component<UserMenuProps, {}> {
             return;
         }
 
+        // TODO: Implement check if actually can log in.
         this.props.login(username, accessToken, refreshToken);
         storeState();
     }

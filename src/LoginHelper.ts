@@ -6,6 +6,6 @@ export function storeState() {
 }
 
 export interface Tokens {
-    access_token: string | undefined | null;
-    refresh_token: string | undefined | null;
+    access_token?: string;
+    refresh_token?: string;
 }
