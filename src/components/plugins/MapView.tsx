@@ -12,15 +12,19 @@ export class MapViewContainer extends React.Component<MapProps> {
     constructor(props: MapProps) {
         super(props);
     }
-
-    async getNearbySights(mapProps: MapProps, map: any) {
-        map.zoom = 6;
-    }
     
     render() {
         let style = {height: '400px'};
         return (
-        <Map style={style} google={this.props.google} onReady={this.getNearbySights} zoom={14}>
+        <Map 
+            style={style} 
+            initialCenter={{
+                lat: this.props.lat,
+                lng: this.props.lng
+            }} 
+            google={this.props.google} 
+            zoom={14}
+        >
             <Marker position={{lat: this.props.lat, lng: this.props.lng}} />
             <InfoWindow>
                 <div>

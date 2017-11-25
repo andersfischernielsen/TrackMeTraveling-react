@@ -2,11 +2,10 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Redirect } from 'react-router-dom';
 import { UsernameHeading } from './UsernameHeading';
-// import { FetchSights } from './FetchSights';
 import { MapView } from '../plugins/MapView';
 import { NearbySights, Sight } from '../plugins/NearbySights';
 import { BASEURL } from '../../config';
-import { fetchWithToken } from '../../FetchHelper';
+import { fetchWithToken, getNearbySights } from '../../FetchHelper';
 
 interface UserProps {
     username: string;
@@ -27,49 +26,6 @@ interface UserState {
 }
 
 export class User extends React.Component<RouteComponentProps<UserProps>, UserState> {
-    private dummySights = [
-        {
-            title: 'Sight 1',
-            description: 'Description',
-            imageUrl: '',
-            distance: 2.5,
-            lat: 2,
-            lng: 2,
-        },
-        {
-            title: 'Sight 2',
-            description: 'Description',
-            imageUrl: '',
-            distance: 5.5,
-            lat: 2,
-            lng: 2,
-        },
-        {
-            title: 'Sight 3',
-            description: 'Description',
-            imageUrl: '',
-            distance: 9,
-            lat: 2,
-            lng: 2,
-        },
-        {
-            title: 'Sight 4',
-            description: 'Description',
-            imageUrl: '',
-            distance: 2,
-            lat: 2,
-            lng: 2,
-        },
-        {
-            title: 'Sight 5',
-            description: 'Description',
-            imageUrl: '',
-            distance: 28.5,
-            lat: 2,
-            lng: 2,
-        }
-    ];
-    
     constructor(props: RouteComponentProps<UserProps>) {
         super(props);
         this.state = {
@@ -105,7 +61,6 @@ export class User extends React.Component<RouteComponentProps<UserProps>, UserSt
                 </div>
                 <div className="row" style={style}>
                     <div className="col-sm-8">
-                        {/* <FetchSights /> */}
                         <MapView 
                             username={data.username}
                             lat={data.latitude} 
@@ -125,6 +80,13 @@ export class User extends React.Component<RouteComponentProps<UserProps>, UserSt
             </div>
         );
     }
+
+    async getSights(latitude?: number, longitude?: number) {
+        if (!latitude || !longitude) {
+            return;
+        }
+        return await getNearbySights(latitude, longitude) as Sight[];
+    }
     
     async getUserData(username: string): Promise<UserState|undefined> {
         try {
@@ -142,10 +104,7 @@ export class User extends React.Component<RouteComponentProps<UserProps>, UserSt
                     return undefined;
                 }
 
-                // TODO: Remove temp data.
-                json.sights = this.dummySights;
-                //
-
+                json.sights = await this.getSights(json.latitude, json.longitude);
                 return {
                     data: json,
                     found: true,

@@ -10,7 +10,7 @@ export interface Sight {
     title: string;
     description: string;
     imageUrl: string;
-    distance: number;
+    // distance: number;
     lat: number;
     lng: number;
 }
@@ -25,7 +25,7 @@ class SightComponent extends React.Component<SightProps> {
                 <a href="#" className="list-group-item list-group-item-action flex-column align-items-start">
                     <div className="d-flex w-100 justify-content-between">
                     <h5 className="mb-1">{this.props.sight.title}</h5>
-                    <small>{this.props.sight.distance} km</small>
+                    {/* <small>{this.props.sight.distance} km</small> */}
                     </div>
                     <p className="mb-1">
                         {this.props.sight.description}
