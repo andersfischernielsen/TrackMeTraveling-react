@@ -37,5 +37,5 @@ export class MapViewContainer extends React.Component<MapProps> {
 }
 
 export const MapView = GoogleApiWrapper({
-    apiKey: 'AIzaSyCAZM5I3SYu-POAtKidlCXSOo_Ys9q7spE'
+    apiKey: 'AAAAAAAAAAAAAAAA-AAAAAAAAAAAAA_AAAAAAAA'
 })(MapViewContainer);
